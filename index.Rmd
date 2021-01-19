@@ -16,10 +16,10 @@ output:
  
 ## Bio
 
-I am a classically trained theoretical physicist currently transitioning into the
-field of data science. Currently I develop software to give an autonomous race
-car eyes. Things currently piquing my interest: reinforcement learning; dataviz;
-biomedical AI.
+I am a classically trained theoretical physicist transitioning into the
+field of data science and machine learning. Currently, I develop software for 
+[**EUFS**](https://eufs.eusa.ed.ac.uk/) to give an autonomous race
+car eyes.
 
 ## Education
 
