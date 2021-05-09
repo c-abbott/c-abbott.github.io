@@ -1,0 +1,67 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="{{ '/static/style.css?v=1'|url }}">
+<link rel="alternate" type="application/atom+xml" title="Callum Abbott" href="/feed.xml" />
+{% block opengraph %}
+<meta content='{{ '/static/callum.png'|url(external=True) }}' property='og:image'>
+{% endblock %}
+<title>{% block title %}Welcome{% endblock %} — callum</title>
+<body>
+  <header>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+          window.MathJax = {
+            loader: {load: ['[tex]/color']},
+            tex: {
+              inlineMath: [ ['$','$'],['\\(','\\)'] ],
+              displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+              processEscapes: true,
+              processRefs: true,
+              packages: ['base', 'ams', ['color']]
+            },
+            options: {
+            ignoreHtmlClass: 'tex2jax_ignore|editor-rich-text'
+            }
+          };
+</script>
+    <style>
+      a:link {
+        color:  #000000; 
+        background-color: transparent; 
+        text-decoration: none;
+        font-weight:none;
+      }
+      
+      a:hover {
+        color:#F95700FF;
+        background-color: transparent;
+        text-decoration: none;
+        font-weight:none;
+      }
+    
+      </style>
+    <h1>
+      <a href="{{ '/'|url }}">callum abbott</a>
+      <a href="mailto:callum.abbott@outlook.com"></a>
+    </h1>
+    <div class="social">
+      <a href="https://twitter.com/callumbabbott">{% include '/includes/twitter.svg' %}</a>
+      <a href="https://www.linkedin.com/in/c-abbott/">{% include '/includes/linkedin.svg' %}</a>
+      <a href="https://github.com/c-abbott">{% include 'includes/github.svg' %}</a>
+    </div>
+  </header>
+  <div class="page">
+    {% block body %}{% endblock %}
+  </div>
+  <footer>
+    <a href="mailto:callum.abbott@outlook.com">callum.abbott@outlook.com</a>
+  </footer>
+<!-- Fathom - beautiful, simple website analytics -->
+<script src="https://cdn.usefathom.com/3.js" site="JXNVNPYD"></script>
+<script>
+    window.fathom || document.write('<script src="https://bandicoot.solberg.is/core.js"><\/script>');
+</script>
+<!-- / Fathom -->
+</body>
