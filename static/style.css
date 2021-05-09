@@ -56,7 +56,7 @@ header {
 header h1 {
   margin: 0;
   font-weight: normal;
-  font-size: 17.5px;
+  font-size: 20.0px;
 }
 
 header h1 a {
@@ -114,7 +114,7 @@ div.page {
 }
 
 .blog-post p, .blog-post li {
-  font-size: 80%;
+  font-size: 90%;
 }
 
 .blog-post img {
@@ -184,7 +184,7 @@ div.page {
 }
 
 .intro .bio p {
-  font-size: 10pt;
+  font-size: 12pt;
   margin: 8px 0;
 }
 
@@ -200,7 +200,7 @@ div.page {
     text-align: center;
   }
   .intro .bio p {
-    font-size: 6pt;
+    font-size: 8pt;
   }
   .intro .picture img {
     width: 60%;
@@ -226,12 +226,12 @@ div.page {
   text-transform: uppercase;
   margin-bottom: 30px;
   color: rgba(0,0,0,0.4);
-  font-size: 14pt;
+  font-size: 15pt;
 }
 
 .index-posts .post {
   display: block;
-  font-size: 14pt;
+  font-size: 15pt;
   border-bottom: 0.5px solid rgba(0,0,0,0.1);
   padding-bottom: 10px;
   margin-bottom: 10px;
@@ -247,7 +247,7 @@ div.page {
 }
 
 .footnotes {
-  font-size: 70%;
+  font-size: 80%;
 }
 
 .footnotes p {
@@ -314,7 +314,7 @@ table {
   background: white;
   width: 100%; 
   font-family: monospace;
-  font-size: 10pt;
+  font-size: 11pt;
   font-variant-numeric: lining-nums tabular-nums;
   padding: 0.3em 0.1em;
 }
