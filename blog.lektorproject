@@ -1,0 +1,14 @@
+[project]
+name = Callum Abbott
+locale = en_UK
+url = http://www.causalcallum.com/
+
+[servers.production]
+name = Production
+enabled = yes
+default = yes
+target = ghpages://c-abbott/callum?cname=www.causalcallum.com
+[feed]
+name = Callum Abbott
+source_path = /
+url_path = /feed.xml
