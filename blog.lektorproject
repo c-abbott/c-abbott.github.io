@@ -3,11 +3,14 @@ name = Callum Abbott
 locale = en_UK
 url = http://www.causalcallum.com/
 
+[servers.ghpages]
+target = ghpages://c-abbott/c-abbott.github.io
+
 [servers.production]
 name = Production
 enabled = yes
 default = yes
-target = ghpages://c-abbott/callum?cname=www.causalcallum.com
+target = ghpages://c-abbott/c-abbott.github.io?cname=www.causalcallum.com
 [feed]
 name = Callum Abbott
 source_path = /
