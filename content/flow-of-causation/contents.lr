@@ -1,0 +1,42 @@
+title: the flow of causation
+---
+hero_image:
+---
+pub_date: 2021-05-24
+---
+body:
+
+## mapping causal graphs to probability distributions
+Now that we are familiar with the concept of DAGs and causal graphs, we can begin to analyze these mathematical objects with a little more rigour. Taking the causal graph depicted in Fig. 1 below as an example, it turns out by constructing this graph we are implicitly modelling a probability distribution over the set of four random variables $\\{A, B, C, D\\}$. This probability distribution is known as a **<a href ="https://en.wikipedia.org/wiki/Joint_probability_distribution"> joint probability distribution,</a>** and *naïvely* takes the following form: 
+
+$$\begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{BurntOrange}p(D \mid A, B, C)\end{aligned}$$
+
+However, given the information encoded in our graph, we can simplify the expression by taking note of which variables are causally connected. For example, the quantity $p(D \mid A, B, C)$ denotes the probability distribution over the random variable, $D$, conditional on random variables $A$, $B$, and $C$ -- but do we really need to condition on all 3 of these variables? Fig. 1 illustrates that only $C$ is a direct cause of $D$, and so actually only $C$ needs to be conditioned on in order to encapsulate the distribution of $D$. Mathematically speaking, $D$ is said to be independent of $A$ and $B$, simplifying our expression of the joint distribution to:
+$$D\perp\kern-5pt\perp\\{A, B\\}$$
+
+$$\implies \begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{BurntOrange}p(D \mid C)\end{aligned}$$
+
+<div class="caption">
+  <img src="./markov-assump.png"style="width:70%" style="height:70%" class="shadow-img">
+  <p> Figure 1</p>
+</div>
+The analysis we conducted above embodies one of the cornerstone assumptions in the analysis of causal graphs known as *minimality*.
+
+**Minimality Assumption**
+
+1. A random variable $X$ in a DAG $\mathcal{G}$ is independent of all its non-descendants (**<a href="https://en.wikipedia.org/wiki/Markov_property">Local Markov Assumption</a>**)
+
+2. Adjacent variables/nodes in a DAG $\mathcal{G}$ are dependent
+
+The idea of th
+
+
+## causal graph building blocks
+
+## conditioning on chains and forks
+
+## conditioning on colliders
+
+## intervening vs. conditions
+
+## backdoor criterion
