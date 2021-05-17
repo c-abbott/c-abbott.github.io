@@ -20,16 +20,25 @@ $$\implies \begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{
   <img src="./markov-assump.png"style="width:70%" style="height:70%" class="shadow-img">
   <p> Figure 1</p>
 </div>
-The analysis we conducted above embodies one of the cornerstone assumptions in the analysis of causal graphs known as *minimality*.
+This intuitive analysis of the causal graph in Fig. 1 actually embodies one of the cornerstone assumptions in the analysis of causal graphs known as *Minimality*.
 
 **Minimality Assumption**
 
-1. A random variable $X$ in a DAG $\mathcal{G}$ is independent of all its non-descendants (**<a href="https://en.wikipedia.org/wiki/Markov_property">Local Markov Assumption</a>**)
+1. A random variable $X$ in a DAG $\mathcal{G}$ is independent of all its non-descendants i.e. $\\{A,B\\}$ are the non-descendants of $D$.
 
-2. Adjacent variables/nodes in a DAG $\mathcal{G}$ are dependent
+2. Adjacent variables/nodes ($C$ and $D$) in a DAG $\mathcal{G}$ are dependent.
 
-The idea of th
+The first bullet point of the minimality assumption is more formally known as the **<a href="https://en.wikipedia.org/wiki/Markov_property">Local Markov Assumption</a>**, or the **<a href="https://en.wikipedia.org/wiki/Markov_property">Markov Property</a>**. It is a simplification that is often made when modelling stochastic processes, making it commonly utilized in subjects such as statistical mechanics, reinforcement learning, and statistics. Generally speaking, processes which are assumed to obey this property are colloquially known as *memory-less*, since the current state of the system (a particular node in the DAG) is assumed to be dependent on only the previous state (direct cause). The main consequence of the Local Markov Assumption is the **<a href="https://en.wikipedia.org/wiki/Bayesian_network">Bayesian Network Factorization</a>** which is outlined as follows:
 
+**Bayesian Network Factorization**
+
+- Given a probability distribution $p$ and a DAG $\mathcal{G}$, $p$ factorizes according to $\mathcal{G}$ if
+$$p(x_1,...,x_n) = \prod_ip(x_i\mid\text{pa}_i)$$
+where $\text{pa}_i$ denotes the parents (direct causes) and node (variable) $x_i$.
+
+This notion was illustrated explicitly when we performed the simplification: $$\color{BurntOrange}p(D\mid A,B,C) \rightarrow p(D\mid C)$$
+
+I appreciate that mathematical jargon such as the Markov Property, Bayesian Network Factorization, and Minimality may only add confusion to my explanations of causal graphs, however, I would encourage readers with lesser experience in mathematics to try look past the jargon, and connect with what the concept is actually addressing at heart -- the notion addressed are often rather intuitive and easy to understand when explained with words. 
 
 ## causal graph building blocks
 
