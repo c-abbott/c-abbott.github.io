@@ -20,6 +20,7 @@ $$\implies \begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{
   <img src="./markov-assump.png"style="width:70%" style="height:70%" class="shadow-img">
   <p> Figure 1</p>
 </div>
+
 This intuitive analysis of the causal graph in Fig. 1 actually embodies one of the cornerstone assumptions in the analysis of causal graphs known as *Minimality*.
 
 **Minimality Assumption**
@@ -38,14 +39,50 @@ where $\text{pa}_i$ denotes the parents (direct causes) and node (variable) $x_i
 
 This notion was illustrated explicitly when we performed the simplification: $$\color{BurntOrange}p(D\mid A,B,C) \rightarrow p(D\mid C)$$
 
-I appreciate that mathematical jargon such as the Markov Property, Bayesian Network Factorization, and Minimality may only add confusion to my explanations of causal graphs, however, I would encourage readers with lesser experience in mathematics to try look past the jargon, and connect with what the concept is actually addressing at heart -- the notion addressed are often rather intuitive and easy to understand when explained with words. 
+I appreciate that mathematical jargon such as the Markov Property, Bayesian Network Factorization, and Minimality may only add confusion to my explanations of causal graphs, however, I would encourage readers with lesser experience in mathematics to try look past the jargon, and connect with what the concept is actually addressing at heart -- the notion addressed are often rather intuitive and easy to understand when explained with words.
 
 ## causal graph building blocks
+At the most fundamental level, a directed graph can be broken down into three basic building blocks (1) chains, (2) forks and, (3) colliders. That is, regardless of how large of a causal graph you have created, joining these 3-node structures in the appropriate configuration will perfectly reconstruct the model's structure.
 
-## conditioning on chains and forks
+### statistical dependencies in chains and forks
+The upper panel of Fig. 2 visualizes a chain of three random variables $A$, $B$ and $C$. Using what we learned from the previous section, we can quickly determine the elements in sets $\\{A,B\\}$ and $\\{B,C\\}$ are statistically dependent (associated) from the Minimality assumption. But what about $A$ and $C$? Do they share a dependence? It turns out that $A$ and $C$ are in fact associated, and in general, association is able to flow along any path between two variables in chain structures i.e. from $A \rightarrow B \rightarrow C$ or $C \rightarrow B \rightarrow A$. However, in the lower panel of Fig. 2, we observe that when the variable $B$ is conditioned on - indicated by the blue highlighting - the association between the $A$ and $C$ variables becomes blocked. This behaviour arises due to the Local Markov Assumption, introduced in the previous section, which states that each variable depends only locally on its parents.
 
-## conditioning on colliders
+To provide some intuition into this phenomenon, let's take $A$ to be a binary variable indicating whether an individual has received a complete dose of a COVID-19 vaccine. We could then model $B$ and $C$, also as a binary variables, to represent whether that individual suffers from any side-effects, and whether they took the following day off work, respectively. In the case where we do not condition on $B$, it is easy to see that there must be association flowing along the chain between the variables $A$ and $C$, even though that $A$ is not explicitly a direct cause of $C$.
 
-## intervening vs. conditions
+ In regards to the conditioning example, suppose we condition on the subset of the population who did not suffer any side-effects from the vaccine. All those who suffered from side-effects are subsequently dropped from the analysis, and we transition from modelling $p(A, B, C)$ to modelling $p(A, C \mid B=0)$. 
+<div class="caption">
+  <img src="./chain-association.png"style="width:65%" style="height:70%" class="shadow-img">
+</div>
+<div class="caption">
+  <img src="./chain-association-blocked.png" style="width:65%" style="height:70%" class="shadow-img">
+  <p> Figure 2: Associational flows in chains.</p>
+</div>
+
+
+
+<div class="row">
+  <div class="column">
+    <img src="./fork-association.png" alt="fork" style="width:115%">
+  </div>
+  <div class="column">
+    <img src="./fork-association-blocked.png" alt="fork-blocked" style="width:100%">
+    <p>Figure 3: Associational flows in forks.</p>
+  </div>
+</div>
+
+
+### statistical dependencies in colliders
+
+<div class="row">
+  <div class="column">
+    <img src="./collider-association.png" alt="fork" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="./collider-association-blocked.png" alt="fork-blocked" style="width:100%">
+    <p>Figure 4: Associational flows in colliders.</p>
+  </div>
+</div>
+
+## intervening vs. conditioning
 
 ## backdoor criterion
