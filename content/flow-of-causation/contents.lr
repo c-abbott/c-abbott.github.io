@@ -1,0 +1,143 @@
+title: the flow of causation
+---
+hero_image:
+---
+pub_date: 2021-05-24
+---
+body:
+
+## mapping causal graphs to probability distributions
+Now that we are familiar with the concept of DAGs and causal graphs, we can begin to analyze these mathematical objects with a little more rigour. Taking the causal graph depicted in Fig. 1 below as an example, it turns out by constructing this graph we are implicitly modelling a probability distribution over the set of four random variables $\\{A, B, C, D\\}$. This probability distribution is known as a **<a href ="https://en.wikipedia.org/wiki/Joint_probability_distribution"> joint probability distribution,</a>** and *naïvely* takes the following form: 
+
+$$\begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{BurntOrange}p(D \mid A, B, C)\end{aligned}$$
+
+However, given the information encoded in our graph, we can simplify the expression by taking note of which variables are causally connected. For example, the quantity $p(D \mid A, B, C)$ denotes the probability distribution over the random variable, $D$, conditional on random variables $A$, $B$, and $C$ -- but do we really need to condition on all 3 of these variables? Fig. 1 illustrates that only $C$ is a direct cause of $D$, and so actually only $C$ needs to be conditioned on in order to encapsulate the distribution of $D$. Mathematically speaking, $D$ is said to be independent of $A$ and $B$, simplifying our expression of the joint distribution to:
+$$D\perp\kern-5pt\perp\\{A, B\\}$$
+
+$$\implies \begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{BurntOrange}p(D \mid C)\end{aligned}$$
+
+<div class="caption">
+  <img src="./markov-assump.png"style="width:70%" style="height:70%" class="shadow-img">
+  <p> Figure 1</p>
+</div>
+
+This intuitive analysis of the causal graph in Fig. 1 actually embodies one of the cornerstone assumptions in the analysis of causal graphs known as *Minimality*.
+
+**Minimality Assumption**
+
+1. A random variable $X$ in a DAG $\mathcal{G}$ is independent of all its non-descendants i.e. $\\{A,B\\}$ are the non-descendants of $D$.
+
+2. Adjacent variables/nodes ($C$ and $D$) in a DAG $\mathcal{G}$ are dependent.
+
+The first bullet point of the minimality assumption is more formally known as the **<a href="https://en.wikipedia.org/wiki/Markov_property">Local Markov Assumption</a>**, or the **<a href="https://en.wikipedia.org/wiki/Markov_property">Markov Property</a>**. It is a simplification that is often made when modelling stochastic processes, making it commonly utilized in subjects such as statistical mechanics, reinforcement learning, and statistics. Generally speaking, processes which are assumed to obey this property are colloquially known as *memory-less*, since the current state of the system (a particular node in the DAG) is assumed to be dependent on only the previous state (direct cause). The main consequence of the Local Markov Assumption is the **<a href="https://en.wikipedia.org/wiki/Bayesian_network">Bayesian Network Factorization</a>** which is outlined as follows:
+
+**Bayesian Network Factorization**
+
+- Given a probability distribution $p$ and a DAG $\mathcal{G}$, $p$ factorizes according to $\mathcal{G}$ if
+$$p(x_1,...,x_n) = \prod_ip(x_i\mid\text{pa}_i)$$
+where $\text{pa}_i$ denotes the parents (direct causes) and node (variable) $x_i$.
+
+This notion was illustrated explicitly when we performed the simplification: $$\color{BurntOrange}p(D\mid A,B,C) \rightarrow p(D\mid C)$$
+
+I appreciate that mathematical jargon such as the Markov Property, Bayesian Network Factorization, and Minimality may only add confusion to my explanations of causal graphs, however, I would encourage readers with lesser experience in mathematics to try look past the jargon, and connect with what the concept is actually addressing at heart -- the notion addressed are often rather intuitive and easy to understand when explained with words.
+
+## causal graph building blocks
+At the most fundamental level, a directed graph can be broken down into three basic building blocks (1) chains, (2) forks and, (3) colliders. That is, regardless of how large of a causal graph you have created, joining these 3-node structures in the appropriate configuration will perfectly reconstruct the model's structure.
+
+### statistical dependencies in chains and forks
+The upper panel of Fig. 2 visualizes a chain of three random variables $A$, $B$ and $C$. Using what we learned from the previous section, we can quickly determine that $A$ and $B$, as well as $B$ and $C$, are statistically dependent (associated) from the Minimality assumption. But what about $A$ and $C$? Do they share a dependence? It turns out that $A$ and $C$ are in fact associated, and in general, association is able to flow along any path between two variables in chain structures i.e. from $A \rightarrow B \rightarrow C$ or $C \rightarrow B \rightarrow A$. However, in the lower panel of Fig. 2, we observe that when the variable $B$ is conditioned on - indicated by the blue highlighting - the association between the $A$ and $C$ variables becomes blocked.
+
+To provide some intuition into this phenomenon, let's take $A$ to be a binary variable indicating whether an individual has received a complete dose of a COVID-19 vaccine. We could then model $B$ and $C$, also as a binary variables, to represent whether that individual suffers from any side-effects, and whether they took the following day off work respectively. In the case where we do not condition on $B$, it is easy to understand how the causal flow from $A$ to $C$ consequently induces an association between these two variables. For instance, *I took the vaccine $A=1$, I suffered from side effects $B=1$, so I took the following day off work $C=1$* -- there is hence an association which propagates from $A$ to $C$ via $B$.
+
+<div class="caption">
+  <img src="./chain-association.png"style="width:65%" style="height:70%" class="shadow-img">
+</div>
+<div class="caption">
+  <img src="./chain-association-blocked.png" style="width:65%" style="height:70%" class="shadow-img">
+  <p> Figure 2: Associational flows in chains.</p>
+</div>
+
+However, in regards to the conditioning example, suppose we condition on the subset of the population who did not suffer any side-effects following their vaccination, $B=0$. Consequently, all those who *did* suffer from side-effects are subsequently dropped from the analysis, and we transition from modelling $p(A, B, C)$ to $p(A, C \mid B=0)$. Four hypothetical instances of this subset are presented in the table below. Perhaps it is now clear that without observing how $C$ responds to variations in $B$, it becomes impossible to determine how $A$ and $C$ are connected. We can intuitively think of this conditioning as blocking the causal flow along the chain which subsequently induces **<a href="https://en.m.wikipedia.org/wiki/?Dependent_and_independent_variables">independence</a>** between the variables $A$ and $C$. Association along the chain has been lost.
+
+<div class="table-wrapper">
+    <table class="fl-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>1</td>
+            <td>0</td>
+            <td>1</td>
+        </tr>
+        <tbody>
+    </table>
+</div>
+
+
+For those who are more mathematically minded, this behaviour simply arises due to the Local Markov Assumption (LMA) which states that each variable depends only locally on its parents (direct causes). We can hence prove that $A$ and $C$ are truly independent in just a few lines of maths starting with applying the LMA to the joint distribution of $\\{A,B,C\\}$:
+$$\begin{align}
+  p(A, B, C) &= p(A)p(B\mid A)p(C \mid B)
+\end{align}$$
+Bayes' rule then tells us that $p(A,B,C) = p(A, C \mid B)p(B)$, so we have
+$$p(A,C \mid B) = \frac{p(A)p(B\mid A)p(C \mid B)}{p(B)}$$
+
+With yet another application of Bayes' rule on $p(A,B)$, we finally yield
+
+$$\begin{eqnarray}
+p(A,C \mid B) &=& \frac{p(A,B)}{p(B)}p(C \mid B) \nonumber \\\\
+&=& p(A \mid B) p(C \mid B) \\
+\end{eqnarray}$$
+
+$$\therefore A\mid B\perp\kern-5pt\perp C \mid B$$
+
+<div class="row">
+  <div class="column">
+    <img src="./fork-association.png" alt="fork" style="width:115%">
+  </div>
+  <div class="column">
+    <img src="./fork-association-blocked.png" alt="fork-blocked" style="width:100%">
+    <p>Figure 3: Associational flows in forks.</p>
+  </div>
+</div>
+
+Fig. 3 (above) presents an example of a fork structure which are also common in causal graphs. Whilst forks should be interpreted very differently to chains - i.e. two variables share a common cause - these structures happen to be very similar to chains since the flow of association can also move along any path between a pair of variables. Consequently, forks possess completely analogous mathematical behaviour to chains, resulting in the flow of association between $A$ and $C$ also being blocked when $B$ is conditioned on via the same mathematical proof detailed previously. 
+
+### statistical dependencies in colliders
+
+
+<div class="row">
+  <div class="column">
+    <img src="./collider-association.png" alt="fork" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="./collider-association-blocked.png" alt="fork-blocked" style="width:100%">
+    <p>Figure 4: Associational flows in colliders.</p>
+  </div>
+</div>
+
+## flow of causation
