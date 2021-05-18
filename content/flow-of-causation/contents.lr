@@ -45,11 +45,10 @@ I appreciate that mathematical jargon such as the Markov Property, Bayesian Netw
 At the most fundamental level, a directed graph can be broken down into three basic building blocks (1) chains, (2) forks and, (3) colliders. That is, regardless of how large of a causal graph you have created, joining these 3-node structures in the appropriate configuration will perfectly reconstruct the model's structure.
 
 ### statistical dependencies in chains and forks
-The upper panel of Fig. 2 visualizes a chain of three random variables $A$, $B$ and $C$. Using what we learned from the previous section, we can quickly determine the elements in sets $\\{A,B\\}$ and $\\{B,C\\}$ are statistically dependent (associated) from the Minimality assumption. But what about $A$ and $C$? Do they share a dependence? It turns out that $A$ and $C$ are in fact associated, and in general, association is able to flow along any path between two variables in chain structures i.e. from $A \rightarrow B \rightarrow C$ or $C \rightarrow B \rightarrow A$. However, in the lower panel of Fig. 2, we observe that when the variable $B$ is conditioned on - indicated by the blue highlighting - the association between the $A$ and $C$ variables becomes blocked. This behaviour arises due to the Local Markov Assumption, introduced in the previous section, which states that each variable depends only locally on its parents.
+The upper panel of Fig. 2 visualizes a chain of three random variables $A$, $B$ and $C$. Using what we learned from the previous section, we can quickly determine that $A$ and $B$, as well as $B$ and $C$, are statistically dependent (associated) from the Minimality assumption. But what about $A$ and $C$? Do they share a dependence? It turns out that $A$ and $C$ are in fact associated, and in general, association is able to flow along any path between two variables in chain structures i.e. from $A \rightarrow B \rightarrow C$ or $C \rightarrow B \rightarrow A$. However, in the lower panel of Fig. 2, we observe that when the variable $B$ is conditioned on - indicated by the blue highlighting - the association between the $A$ and $C$ variables becomes blocked.
 
-To provide some intuition into this phenomenon, let's take $A$ to be a binary variable indicating whether an individual has received a complete dose of a COVID-19 vaccine. We could then model $B$ and $C$, also as a binary variables, to represent whether that individual suffers from any side-effects, and whether they took the following day off work, respectively. In the case where we do not condition on $B$, it is easy to see that there must be association flowing along the chain between the variables $A$ and $C$, even though that $A$ is not explicitly a direct cause of $C$.
+To provide some intuition into this phenomenon, let's take $A$ to be a binary variable indicating whether an individual has received a complete dose of a COVID-19 vaccine. We could then model $B$ and $C$, also as a binary variables, to represent whether that individual suffers from any side-effects, and whether they took the following day off work respectively. In the case where we do not condition on $B$, it is easy to understand how the causal flow from $A$ to $C$ consequently induces an association between these two variables. For instance, *I took the vaccine $A=1$, I suffered from side effects $B=1$, so I took the following day off work $C=1$* -- there is hence an association which propagates from $A$ to $C$ via $B$.
 
- In regards to the conditioning example, suppose we condition on the subset of the population who did not suffer any side-effects from the vaccine. All those who suffered from side-effects are subsequently dropped from the analysis, and we transition from modelling $p(A, B, C)$ to modelling $p(A, C \mid B=0)$. 
 <div class="caption">
   <img src="./chain-association.png"style="width:65%" style="height:70%" class="shadow-img">
 </div>
@@ -58,7 +57,63 @@ To provide some intuition into this phenomenon, let's take $A$ to be a binary va
   <p> Figure 2: Associational flows in chains.</p>
 </div>
 
+However, in regards to the conditioning example, suppose we condition on the subset of the population who did not suffer any side-effects following their vaccination, $B=0$. Consequently, all those who *did* suffer from side-effects are subsequently dropped from the analysis, and we transition from modelling $p(A, B, C)$ to $p(A, C \mid B=0)$. Four hypothetical instances of this subset are presented in the table below. Perhaps it is now clear that without observing how $C$ responds to variations in $B$, it becomes impossible to determine how $A$ and $C$ are connected. We can intuitively think of this conditioning as blocking the causal flow along the chain which subsequently induces **<a href="https://en.m.wikipedia.org/wiki/?Dependent_and_independent_variables">independence</a>** between the variables $A$ and $C$. Association along the chain has been lost.
 
+<div class="table-wrapper">
+    <table class="fl-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>1</td>
+            <td>0</td>
+            <td>1</td>
+        </tr>
+        <tbody>
+    </table>
+</div>
+
+
+For those who are more mathematically minded, this behaviour simply arises due to the Local Markov Assumption (LMA) which states that each variable depends only locally on its parents (direct causes). We can hence prove that $A$ and $C$ are truly independent in just a few lines of maths starting with applying the LMA to the joint distribution of $\\{A,B,C\\}$:
+$$\begin{align}
+  p(A, B, C) &= p(A)p(B\mid A)p(C \mid B)
+\end{align}$$
+Bayes' rule then tells us that $p(A,B,C) = p(A, C \mid B)p(B)$, so we have
+$$p(A,C \mid B) = \frac{p(A)p(B\mid A)p(C \mid B)}{p(B)}$$
+
+With yet another application of Bayes' rule on $p(A,B)$, we finally yield
+
+$$\begin{eqnarray}
+p(A,C \mid B) &=& \frac{p(A,B)}{p(B)}p(C \mid B) \nonumber \\\\
+&=& p(A \mid B) p(C \mid B) \\
+\end{eqnarray}$$
+
+$$\therefore A\mid B\perp\kern-5pt\perp C \mid B$$
 
 <div class="row">
   <div class="column">
@@ -70,8 +125,10 @@ To provide some intuition into this phenomenon, let's take $A$ to be a binary va
   </div>
 </div>
 
+Fig. 3 (above) presents an example of a fork structure which are also common in causal graphs. Whilst forks should be interpreted very differently to chains - i.e. two variables share a common cause - these structures happen to be very similar to chains since the flow of association can also move along any path between a pair of variables. Consequently, forks possess completely analogous mathematical behaviour to chains, resulting in the flow of association between $A$ and $C$ also being blocked when $B$ is conditioned on via the same mathematical proof detailed previously. 
 
 ### statistical dependencies in colliders
+
 
 <div class="row">
   <div class="column">
@@ -83,6 +140,4 @@ To provide some intuition into this phenomenon, let's take $A$ to be a binary va
   </div>
 </div>
 
-## intervening vs. conditioning
-
-## backdoor criterion
+## flow of causation
