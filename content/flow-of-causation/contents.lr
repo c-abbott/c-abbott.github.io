@@ -42,12 +42,12 @@ This notion was illustrated explicitly when we performed the simplification: $$\
 I appreciate that mathematical jargon such as the Markov Property, Bayesian Network Factorization, and Minimality may only add confusion to my explanations of causal graphs, however, I would encourage readers with lesser experience in mathematics to try look past the jargon, and connect with what the concept is actually addressing at heart -- the notion addressed are often rather intuitive and easy to understand when explained with words.
 
 ## causal graph building blocks
-At the most fundamental level, a directed graph can be broken down into three basic building blocks (1) chains, (2) forks and, (3) colliders. That is, regardless of how large of a causal graph you have created, joining these 3-node structures in the appropriate configuration will perfectly reconstruct the model's structure.
+At the most fundamental level, a directed graph can be broken down into three basic building blocks (1) chains, (2) forks and, (3) immoralities. That is, regardless of how large of a causal graph you have created, joining these 3-node structures in the appropriate configuration will perfectly recreate the model's structure.
 
 ### statistical dependencies in chains and forks
 The upper panel of Fig. 2 visualizes a chain of three random variables $A$, $B$ and $C$. Using what we learned from the previous section, we can quickly determine that $A$ and $B$, as well as $B$ and $C$, are statistically dependent (associated) from the Minimality assumption. But what about $A$ and $C$? Do they share a dependence? It turns out that $A$ and $C$ are in fact associated, and in general, association is able to flow along any path between two variables in chain structures i.e. from $A \rightarrow B \rightarrow C$ or $C \rightarrow B \rightarrow A$. However, in the lower panel of Fig. 2, we observe that when the variable $B$ is conditioned on - indicated by the blue highlighting - the association between the $A$ and $C$ variables becomes blocked.
 
-To provide some intuition into this phenomenon, let's take $A$ to be a binary variable indicating whether an individual has received a complete dose of a COVID-19 vaccine. We could then model $B$ and $C$, also as a binary variables, to represent whether that individual suffers from any side-effects, and whether they took the following day off work respectively. In the case where we do not condition on $B$, it is easy to understand how the causal flow from $A$ to $C$ consequently induces an association between these two variables. For instance, *I took the vaccine $A=1$, I suffered from side effects $B=1$, so I took the following day off work $C=1$* -- there is hence an association which propagates from $A$ to $C$ via $B$.
+To provide some intuition into this phenomenon, let's take $A$ to be a binary variable indicating whether an individual has received a complete dose of a COVID-19 vaccine. We could then model $B$ and $C$, also as a binary variables, to represent whether that individual suffers from any side-effects, and whether they took the following day off work respectively. In the case where we do not condition on $B$, it is easy to understand how the causal flow from $A$ to $C$ consequently induces an association between these two variables. For instance, *I took the vaccine $A=1$, I suffered from side effects $B=1$, so I took the following day off work $C=1$* -- an association propagates from $A$ to $C$ via $B$.
 
 <div class="caption">
   <img src="./chain-association.png"style="width:65%" style="height:70%" class="shadow-img">
@@ -57,7 +57,7 @@ To provide some intuition into this phenomenon, let's take $A$ to be a binary va
   <p> Figure 2: Associational flows in chains.</p>
 </div>
 
-However, in regards to the conditioning example, suppose we condition on the subset of the population who did not suffer any side-effects following their vaccination, $B=0$. Consequently, all those who *did* suffer from side-effects are subsequently dropped from the analysis, and we transition from modelling $p(A, B, C)$ to $p(A, C \mid B=0)$. Four hypothetical instances of this subset are presented in the table below. Perhaps it is now clear that without observing how $C$ responds to variations in $B$, it becomes impossible to determine how $A$ and $C$ are connected. We can intuitively think of this conditioning as blocking the causal flow along the chain which subsequently induces **<a href="https://en.m.wikipedia.org/wiki/?Dependent_and_independent_variables">independence</a>** between the variables $A$ and $C$. Association along the chain has been lost.
+However, in regards to the conditioning example, suppose we condition on the subset of the population who did not suffer any side-effects following their vaccination, $B=0$. Consequently, all those who *did* suffer from side-effects are dropped from the analysis and we transition from modelling $p(A, B, C)$ to $p(A, C \mid B=0)$. Four hypothetical instances of this subset are presented in the table below. Perhaps it is now clear that without observing how $C$ responds to variations in $B$, it becomes impossible to determine how $A$ and $C$ are related. We can intuitively think of this conditioning as blocking the causal flow along the chain which subsequently induces **<a href="https://en.m.wikipedia.org/wiki/?Dependent_and_independent_variables">independence</a>** between the variables $A$ and $C$.
 
 <div class="table-wrapper">
     <table class="fl-table">
@@ -127,8 +127,12 @@ $$\therefore A\mid B\perp\kern-5pt\perp C \mid B$$
 
 Fig. 3 (above) presents an example of a fork structure which are also common in causal graphs. Whilst forks should be interpreted very differently to chains - i.e. two variables share a common cause - these structures happen to be very similar to chains since the flow of association can also move along any path between a pair of variables. Consequently, forks possess completely analogous mathematical behaviour to chains, resulting in the flow of association between $A$ and $C$ also being blocked when $B$ is conditioned on via the same mathematical proof detailed previously. 
 
-### statistical dependencies in colliders
+### statistical dependencies in immoralities
+The third and final building block of causal graphs are known as immoralities. In contrast to chains and forks, the association between variables $A$ and $C$ is blocked without even needing to condition on the variable $B$ since $A$ and $C$ are independent, $A \perp\kern-5pt\perp C$. Immoralities thus have the intuitive interpretation of $A$ and $C$ being completely unrelated events which both happen to contribute to some common effect, $B$. A simple example would be that high pollen levels $A$, as well as the presence of cat hair $C$, both independently cause me to sneeze $B$.
 
+Now, you may be wondering what these mathematical objects have done to be branded as *immoral* and rightly so. The origins of this name actually stem from the fact that a family-esque nomenclature is commonly opted for when referencing variables in a graph e.g. in Fig. 4 $B$ is the child of variables $A$ and $C$, or equivalently, $A$ and $C$ are parents to $B$. Keen readers may now spot that the *parents* $A$ and $C$ are independent of one another - there is no edge connecting these variables - yet they still have a *child* together, $B$. This is what is deemed as *immoral*[^1]. Terrible naming conventions aside, the most important part of the immorality structure turns out to be the **<a href="https://en.wikipedia.org/wiki/Collider_(statistics)"> collider variable</a>**, $B$. Perhaps counterintuitively, we observe on the right of Fig. 4 that **when a collider variable is conditioned on, an association between the collider's independent parents is induced**! How strange that when you isolate a specific subset of your dataset, you can make it look as if two completely independent processes are in fact related. Weird. 
+
+To appreciate this phenomenon, I am going to steal an example from Brady Neal's **<a href="https://www.bradyneal.com/causal-inference-course"> causal inference course</a>** which I think illustrates this point in a clear but fun way...
 
 <div class="row">
   <div class="column">
@@ -136,8 +140,28 @@ Fig. 3 (above) presents an example of a fork structure which are also common in 
   </div>
   <div class="column">
     <img src="./collider-association-blocked.png" alt="fork-blocked" style="width:100%">
-    <p>Figure 4: Associational flows in colliders.</p>
+    <p>Figure 4: Associational flows in immoralities.</p>
   </div>
 </div>
 
-## flow of causation
+### good-looking men are jerks
+Suppose you are out dating men but you run into the unfortunate patten that the kind men you meet tend not to be very good-looking, however, the attractive men you meet are all jerks. You find yourself in an ultimatum of having to choose between *looks* and *kindness* which implies that a negative correlation exists between these two variables. But wait a second. You would hope that the men you have been dating are not currently in a relationship, right? It turns out that if you make this reasonable assumption, you are actually dealing with a third variable implicitly; *availability*. Specifically, the men you have been dating are actually a subset of the entire male population that are not currently in relationships. You have hence conditioned on the availability of men.
+
+<div class="caption">
+  <img src="./looks.png"style="width:50%" style="height:70%" class="shadow-img">
+  <p>Figure 5: Men are jerks causal DAG.</p>
+</div>
+
+As seen in Fig. 5 (above), availability turns out to be collider variable which we would expect to induce a negative relationship between the *looks* and *kindness* variables. This expectation becomes reality when we observe the panels depicted in Fig. 6. The top panel displays a population of 100 (hypothetical) men generated uniformly at random[^2] where we have assumed the availability of a man to be *taken* if they're *looks* and *kindness* scores were $\geq 6$. These lucky guys have been highlighted in orange. Computing the correlation coefficient over the entire population then, we observe a statistically insignificant weak correlation of $\rho=-0.115$. However, removing the *taken* men from our analysis and recomputing the correlation coefficient as seen in the bottom panel of Fig. 6, we now yield a value of $\rho = 0.444$; an approximate $400\%$ increase in magnitude. We should hence amend our statement from *good-looking men are jerks*, to * **available** good-looking men are jerks*. Sorry to break it to you.
+
+<div class="caption">
+  <img src="./induced-correlation.png"style="width:100%" style="height:70%" class="shadow-img">
+  <p>Figure 6: Men are jerks collider bias.</p>
+</div>
+
+To summarise, what the immorality DAG encapsulates is the fact that when we condition on collider variables, we are actually selecting a biased subset of the general population to analyze; this is more commonly referred to as **<a href="https://en.wikipedia.org/wiki/Selection_bias"> selection bias</a>** in Rubin's potential outcomes framework of causal inference.
+
+## causal flows
+
+[^1]: Being totally candid, I think this is a stupid name and I hope someone prominent in the field changes this nomenclature in the future. 
+[^2]: The code to reproduce these results can be found on my blog's GitHub **<a href="https://github.com/c-abbott/c-abbott.github.io/tree/main/content/flow-of-causation"> here</a>**.
