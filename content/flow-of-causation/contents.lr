@@ -2,10 +2,11 @@ title: the flow of causation
 ---
 hero_image:
 ---
-pub_date: 2021-05-24
+pub_date: 2021-05-21
 ---
 body:
-
+## intro
+This post extends my **<a href="http://www.causalcallum.com/scms/">previous blog post</a>** on the topic of SCMs, causal DAGs and causality. Feel free to check that out first if you're not familiar with these topics... enjoy!
 ## mapping causal graphs to probability distributions
 Now that we are familiar with the concept of DAGs and causal graphs, we can begin to analyze these mathematical objects with a little more rigour. Taking the causal graph depicted in Fig. 1 below as an example, it turns out by constructing this graph we are implicitly modelling a probability distribution over the set of four random variables $\\{A, B, C, D\\}$. This probability distribution is known as a **<a href ="https://en.wikipedia.org/wiki/Joint_probability_distribution"> joint probability distribution,</a>** and *naïvely* takes the following form: 
 
@@ -194,7 +195,7 @@ Whilst I have only provided an example of creating d-separated treatment and out
 </div>
 
 ## in the next episode
-I hope this blog post has given you a brief taste of how association flows in causal DAGs, and how this allows us reliably estimate the causal association between two variables. In the next post, I will build on this knowledge and begin detailing the process of identifying and then estimating causal quantities using topics such as interventions, counterfactuals, the *do-*operator, the backdoor adjustment criterion and more... see you there :)
+I hope this blog post has given you a brief taste of how association flows in causal DAGs, and how this allows us reliably estimate the causal association between two variables. In the next post, I will build on this knowledge and begin detailing the process of identifying and estimating causal quantities with topics such as interventions, counterfactuals, the *do-*operator, the backdoor adjustment criterion and more... see you there :)
 
 [^1]: Being totally candid, I think this is a stupid name and I hope someone prominent in the field changes this nomenclature in the future. 
 [^2]: The code to reproduce these results can be found on my blog's GitHub **<a href="https://github.com/c-abbott/c-abbott.github.io/tree/main/content/flow-of-causation"> here</a>**.
