@@ -1,14 +1,14 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="static/style.css?v=1">
+<link rel="stylesheet" href="../static/style.css?v=1">
 <link rel="alternate" type="application/atom+xml" title="Callum Abbott" href="/feed.xml" />
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 
-<meta content='http://www.causalcallum.com/static/callum.png' property='og:image'>
 
-<title>callum — callum</title>
+
+<title>the flow of causation — callum</title>
 <link rel="favicon" type="image/png" href="assets/notion_me.png"/>
 <body>
   <header>
@@ -46,7 +46,7 @@
     
       </style>
     <h1>
-      <a href="./">callum abbott</a>
+      <a href="../">callum abbott</a>
       <a href="mailto:callum.abbott@outlook.com"></a>
     </h1>
     <div class="social">
@@ -68,39 +68,169 @@
   </header>
   <div class="page">
     
-
-  <div class="intro">
-    <div class="bio">
-      <div>
-        <p>Hi, I'm Callum 👋</p>
-        <p>I am a classically trained theoretical physicist transitioning into the field of data science and machine learning (ML) via a Data Science MSc at the <a id="link" href="https://www.ed.ac.uk">University of Edinburgh</a>. I am currently a member of Jacques Fleuriot's <a href="https://aiml.inf.ed.ac.uk">AI Modelling Lab</a> where I spend most of my time investigating applications of causal inference for the development of exaplainable AI (XAI) in healthcare.</p>
-        <p><b>Keywords: </b>causal inference, machine learning, dataviz, bayesian, health informatics, rock climbing, coffee, fantasy premier league.</p>
-      </div>
-    </div>
-    <div class="picture">
-      <img alt="profile picture of callum" src="static/callum.png">
-    </div>
+  
+<div class="blog-post">
+  <div class="blog-post-header">
+    <h1>the flow of causation</h1>
+    <p class="meta">
+      May 21, 2021
+    </p>
   </div>
-
-  <div class="index-posts">
-
-    <div class="legend">Blog Posts</div>
-
-    
-      <a href="flow-of-causation/" class="post">
-        <div class="title">the flow of causation</div>
-        <div class="date">21 May 2021</div>
-      </a>
-    
-      <a href="scms/" class="post">
-        <div class="title">describing causation</div>
-        <div class="date">9 May 2021</div>
-      </a>
-    
-
-    
+  
+  <div class="blog-post-body">
+    <h2>intro</h2>
+<p>This post extends my <strong><a href="http://www.causalcallum.com/scms/">previous blog post</a></strong> on the topic of SCMs, causal DAGs and causality. Feel free to check that out first if you're not familiar with these topics... enjoy!</p>
+<h2>mapping causal graphs to probability distributions</h2>
+<p>Now that we are familiar with the concept of DAGs and causal graphs, we can begin to analyze these mathematical objects with a little more rigour. Taking the causal graph depicted in Fig. 1 below as an example, it turns out by constructing this graph we are implicitly modelling a probability distribution over the set of four random variables $\{A, B, C, D\}$. This probability distribution is known as a <strong><a href ="https://en.wikipedia.org/wiki/Joint_probability_distribution"> joint probability distribution,</a></strong> and <em>naïvely</em> takes the following form:</p>
+<p>$$\begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{BurntOrange}p(D \mid A, B, C)\end{aligned}$$</p>
+<p>However, given the information encoded in our graph depicted in Fig. 1, we can simplify the expression by taking note of which variables are causally connected. For example, the quantity $p(D \mid A, B, C)$ denotes the probability distribution over the random variable, $D$, conditional on random variables $A$, $B$, and $C$ -- but do we really need to condition on all 3 of these variables? Fig. 1 illustrates that only $C$ is a direct cause of $D$, and so actually only $C$ needs to be conditioned on in order to encapsulate the distribution of $D$. Mathematically speaking, $D$ is said to be independent of $A$ and $B$, simplifying our expression of the joint distribution to:
+$$D\perp\kern-5pt\perp\{A, B\}$$</p>
+<p>$$\implies \begin{aligned}p(A, B, C, D) = p(A) p(B \mid A) p(C \mid A,B) \color{BurntOrange}p(D \mid C)\end{aligned}$$</p>
+<div class="caption">
+  <img src="./markov-assump.png"style="width:60%" style="height:70%" class="shadow-img">
+  <p> Figure 1</p>
+</div><p>This intuitive analysis of the causal graph in Fig. 1 actually embodies one of the cornerstone assumptions in the analysis of causal graphs known as <em>Minimality</em>.</p>
+<p><strong>Minimality Assumption</strong></p>
+<ol>
+<li><p>A random variable $X$ in a DAG $\mathcal{G}$ is independent of all its non-descendants -- $\{A,B\}$ are the non-descendants of $D$.</p>
+</li>
+<li><p>Adjacent variables/nodes ($C$ and $D$) in a DAG $\mathcal{G}$ are dependent.</p>
+</li>
+</ol>
+<p>The first bullet point of the minimality assumption is more formally known as the <strong><a href="https://en.wikipedia.org/wiki/Markov_property">Local Markov Assumption</a></strong>, or the <strong><a href="https://en.wikipedia.org/wiki/Markov_property">Markov Property</a></strong>. It is a simplification that is often made when modelling stochastic processes, making it commonly utilized in subjects such as statistical mechanics, reinforcement learning, and statistics. Generally speaking, processes which are assumed to obey this property are colloquially known as <em>memory-less</em>, since the current state of the system (a particular node in the DAG) is assumed to be dependent on only the previous state (the direct cause). The primary behaviour which arises as a consequence of the Local Markov Assumption is denoted as the <strong><a href="https://en.wikipedia.org/wiki/Bayesian_network">Bayesian Network Factorization</a></strong>, which is outlined as follows:</p>
+<p><strong>Bayesian Network Factorization</strong></p>
+<ul>
+<li>Given a probability distribution $p$ and a DAG $\mathcal{G}$, $p$ factorizes according to $\mathcal{G}$ if
+$$p(x_1,...,x_n) = \prod_ip(x_i\mid\text{pa}_i)$$
+where $\text{pa}_i$ denotes the parents (direct causes) and node (variable) $x_i$.</li>
+</ul>
+<p>This notion was illustrated explicitly when we performed the simplification: $$\color{BurntOrange}p(D\mid A,B,C) \rightarrow p(D\mid C)$$</p>
+<p>I appreciate that mathematical jargon such as the Markov Property, Bayesian Network Factorization, and Minimality may only add confusion to my explanations of causal graphs, however, I would encourage readers with lesser experience in mathematics to try look past the jargon, and connect with what the concept is actually addressing at heart -- the notion addressed are often rather intuitive and easy to understand when explained with words.</p>
+<h2>causal graph building blocks</h2>
+<p>At the most fundamental level, a directed graph can be broken down into three basic building blocks: (1) chains, (2) forks and, (3) immoralities. That is, regardless of how large of a causal graph you have created, joining these 3-node structures in the appropriate configuration will perfectly recreate the model's structure.</p>
+<h3>statistical dependencies in chains and forks</h3>
+<p>The upper panel of Fig. 2 visualizes a chain of three random variables $A$, $B$ and $C$. Using what we learned from the previous section, we can quickly determine that $A$ and $B$, as well as $B$ and $C$, are statistically dependent (associated) from the Minimality assumption. But what about $A$ and $C$? Do they share a dependence? It turns out that $A$ and $C$ are in fact associated, and in general, association is able to flow along any path between two variables in chain structures i.e. from $A \rightarrow B \rightarrow C$ or $C \rightarrow B \rightarrow A$. However, in the lower panel of Fig. 2, we observe that when the variable $B$ is conditioned on - indicated by the blue highlighting - the association between the $A$ and $C$ variables becomes blocked.</p>
+<p>To provide some intuition into this phenomenon, let's take $A$ to be a binary variable indicating whether an individual has received a complete dose of a COVID-19 vaccine. We could then model $B$ and $C$, also as a binary variables, to represent whether that individual suffers from any side-effects, and whether they took the following day off work respectively. In the case where we do not condition on $B$, it is easy to understand how the causal flow from $A$ to $C$ consequently induces an association between these two variables. For instance, <em>I took the vaccine $A=1$, I suffered from side effects $B=1$, so I took the following day off work $C=1$</em> -- an association propagates from $A$ to $C$ via $B$.</p>
+<div class="caption">
+  <img src="./chain-association.png"style="width:65%" style="height:70%" class="shadow-img">
+</div>
+<div class="caption">
+  <img src="./chain-association-blocked.png" style="width:65%" style="height:70%" class="shadow-img">
+  <p> Figure 2: Associational flows in chains.</p>
+</div><p>However, in regards to the conditioning example, suppose we condition on the subset of the population who did not suffer any side-effects following their vaccination, $B=0$. Consequently, all those who <em>did</em> suffer from side-effects are dropped from the analysis and we transition from modelling $p(A, B, C)$ to $p(A, C \mid B=0)$. Four hypothetical instances of this subset are presented in the table below.</p>
+<div class="table-wrapper">
+    <table class="fl-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>1</td>
+            <td>0</td>
+            <td>1</td>
+        </tr>
+        <tbody>
+    </table>
+</div><p>Perhaps it is now clear that without observing how $C$ responds to variations in $B$, it becomes impossible to determine how $A$ and $C$ are related. We can intuitively think of this conditioning as blocking the causal flow along the chain which subsequently induces <strong><a href="https://en.m.wikipedia.org/wiki/?Dependent_and_independent_variables">independence</a></strong> between the variables $A$ and $C$.</p>
+<p>For those who are more mathematically minded, this behaviour simply arises due to the Local Markov Assumption (LMA) which states that each variable depends only locally on its parents (direct causes). We can hence prove that $A$ and $C$ are truly independent in just a few lines of maths starting with applying the LMA to the joint distribution of $\{A,B,C\}$:
+$$\begin{align}
+  p(A, B, C) &amp;= p(A)p(B\mid A)p(C \mid B)
+\end{align}$$
+Bayes' rule then tells us that $p(A,B,C) = p(A, C \mid B)p(B)$, so we have
+$$p(A,C \mid B) = \frac{p(A)p(B\mid A)p(C \mid B)}{p(B)}$$</p>
+<p>With yet another application of Bayes' rule on $p(A,B)$, we finally yield</p>
+<p>$$\begin{eqnarray}
+p(A,C \mid B) &amp;=&amp; \frac{p(A,B)}{p(B)}p(C \mid B) \nonumber \\
+&amp;=&amp; p(A \mid B) p(C \mid B) \
+\end{eqnarray}$$</p>
+<p>$$\therefore A\mid B\perp\kern-5pt\perp C \mid B$$</p>
+<p>Fig. 3 (below) presents an example of a fork structure which are also common in causal graphs. Whilst forks should be interpreted very differently to chains - i.e. two variables share a common cause - these structures happen to be very similar to chains since the flow of association can also move along any path between a pair of variables. Consequently, forks possess completely analogous mathematical behaviour to chains, resulting in the flow of association between $A$ and $C$ also being blocked when $B$ is conditioned on via the same mathematical proof detailed prior.</p>
+<div class="row">
+  <div class="column">
+    <img src="./fork-association.png" alt="fork" style="width:115%">
+  </div>
+  <div class="column">
+    <img src="./fork-association-blocked.png" alt="fork-blocked" style="width:100%">
+    <p>Figure 3: Associational flows in forks.</p>
+  </div>
+</div><h3>statistical dependencies in immoralities</h3>
+<p>The third and final building block of causal graphs are known as immoralities. In contrast to chains and forks, the association between variables $A$ and $C$ is blocked without even needing to condition on the variable $B$ since $A$ and $C$ are independent, $A \perp\kern-5pt\perp C$. Immoralities thus have the intuitive interpretation of $A$ and $C$ being completely unrelated events which both happen to contribute to some common effect, $B$. A simple example would be that high pollen levels $A$, as well as the presence of cat hair $C$, both independently cause me to sneeze $B$.</p>
+<p>Now, you may be wondering what these mathematical objects have done to be branded as <em>immoral</em> and rightly so. The origins of this name actually stem from the fact that a family-esque nomenclature is commonly opted for when referencing variables in a graph e.g. in Fig. 4 $B$ is the child of variables $A$ and $C$, or equivalently, $A$ and $C$ are parents to $B$. Keen readers may now spot that the <em>parents</em> $A$ and $C$ are independent of one another - there is no edge connecting these variables - yet they still have a <em>child</em> together, $B$. This is what is deemed as <em>immoral</em><sup class="footnote-ref" id="fnref-1"><a href="#fn-1">1</a></sup>.</p>
+<p>Terrible naming conventions aside, the most important part of the immorality structure turns out to be the <strong><a href="https://en.wikipedia.org/wiki/Collider_(statistics)"> collider variable</a></strong>, $B$. Perhaps counterintuitively, we observe on the right of Fig. 4 that <strong>when a collider variable is conditioned on, an association between the collider's independent parents is induced</strong>! How strange that when you isolate a specific subset of your dataset, you can make it look as if two completely independent processes are in fact related. Weird. To appreciate this phenomenon, I am going to steal an example from Brady Neal's <strong><a href="https://www.bradyneal.com/causal-inference-course"> causal inference course</a></strong> which I think illustrates this point in a clear but fun way...</p>
+<div class="row">
+  <div class="column">
+    <img src="./collider-association.png" alt="fork" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="./collider-association-blocked.png" alt="fork-blocked" style="width:100%">
+    <p>Figure 4: Associational flows in immoralities.</p>
+  </div>
+</div><h3>good-looking men are jerks</h3>
+<p>Suppose you are out dating men but you run into the unfortunate patten that the kind men you meet tend not to be very good-looking, however, the attractive men you meet are all jerks. You find yourself in an ultimatum of having to choose between <em>looks</em> and <em>kindness</em> which implies that a negative correlation exists between these two variables. But wait a second. You would hope that the men you have been dating are not currently in a relationship, right? It turns out that if you make this reasonable assumption, you are implicitly dealing with a third variable; <em>availability</em>. Specifically, the men you have been dating are actually a subset of the entire male population that are not currently in relationships. You have hence conditioned on the availability of men.</p>
+<div class="caption">
+  <img src="./looks.png"style="width:60%" style="height:70%" class="shadow-img">
+  <p>Figure 5: Men are jerks causal DAG.</p>
+</div><p>As seen in Fig. 5 (above), availability turns out to be collider variable which we would expect to induce a negative relationship between the <em>looks</em> and <em>kindness</em> variables when conditioned on. This expectation becomes reality when we observe the panels depicted in Fig. 6. The top panel displays a population of 100 (hypothetical) men generated uniformly at random<sup class="footnote-ref" id="fnref-2"><a href="#fn-2">2</a></sup> where we have assumed the availability of a man to be <em>taken</em> if they're <em>looks</em> and <em>kindness</em> scores were $\geq 6$. These lucky guys have been highlighted in orange. Computing the correlation coefficient over the entire population then, we observe a statistically insignificant weak correlation of $\rho=-0.115$. However, removing the <em>taken</em> men from our analysis and recomputing the correlation coefficient as seen in the bottom panel of Fig. 6, we now yield a value of $\rho = -0.444$; an approximate $400\%$ increase in magnitude. We should hence amend our statement from <em>good-looking men are jerks</em>, to <em> <strong>available</strong> good-looking men are jerks</em>. Sorry to break it to you.</p>
+<div class="caption">
+  <img src="./induced-correlation.png"style="width:100%" style="height:70%" class="shadow-img">
+  <p>Figure 6: Men are jerks collider bias.</p>
+</div><p>To summarise, what the immorality DAG encapsulates is the fact that when we condition on collider variables, we are actually selecting a biased subset of the general population to analyze; this is more commonly referred to as <strong><a href="https://en.wikipedia.org/wiki/Selection_bias"> selection bias</a></strong> in Rubin's potential outcomes framework of causal inference.</p>
+<h2>isolating causal flows</h2>
+<p>Now that all the necessary pre-requisites have been met, we can begin to discuss how we can isolate the flow of causation in causal DAGs. This process is of great relevance to fields such as epidemiology, medicine, or any social science for that matter, where we are often interested in the effect of a treatment $T$ on some outcome $Y$.</p>
+<div class="row">
+  <div class="column">
+    <img src="./causal-flow.png" alt="fork" style="width:100%">
+  </div>
+  <div class="column">
+    <img src="./causal.png" alt="fork-blocked" style="width:100%">
+    <p>Figure 7: Isolating causal association.</p>
+  </div>
+</div><p>Taking the fork presented on the left in Fig. 7 as our example, we observe that association is able to flow along all unblocked paths between the treatment and outcome variables. Recall from the <strong><a href="http://www.causalcallum.com/scms/">previous blog post</a></strong> that the edges of our DAG have been endowed with a causal meaning; we hence refer to any flows between two nodes along directed paths as <em>causal association</em> (green),  whilst flows along indirect paths are denoted as <em>confounding association</em> (red).</p>
+<p>Our goal then is to isolate the causal association between $T$ and $Y$ by adjusting for the confounder, $X$. Using our knowledge of how association flows in forks, we hence condition on the $X$ variable thus blocking the confounding association between treatment and outcome variables as seen on the right in Fig. 7. Once our causal model has reached this state, we are able to say that $T$ and $Y$ are <strong><a href="http://bayes.cs.ucla.edu/BOOK-09/ch11-1-2-final.pdf"> d-separated</a></strong> which is defined as follows:</p>
+<p><strong>d-separation</strong></p>
+<ul>
+<li>Two (sets of) nodes $X$ and $Y$ are said to be d-separated by a set of nodes $Z$ if all paths between (any node in) $X$ and (any node in) $Y$ are blocked by $Z$.</li>
+</ul>
+<p>Hence, by making $T$ and $Y$ d-separated, we know that all confounding association has been subsequently blocked between these variables enabling us to reliably estimate the effectiveness of the treatment on our outcome of interest using classical statistical methods. In this context, correlation <em>is</em> causation.</p>
+<p>Whilst I have only provided an example of creating d-separated treatment and outcome variables in a fork, the same principles regarding chains and immoralities still apply. Could you make $T$ and $Y$ d-separated in the following DAG?</p>
+<div class="caption">
+  <img src="./big-dag.png"style="width:80%" style="height:70%" class="shadow-img">
+  <p>Figure 8: Big DAG.</p>
+</div><h2>in the next episode</h2>
+<p>I hope this blog post has given you a brief taste of how association flows in causal DAGs, and how this allows us reliably estimate the causal association between two variables. In the next post, I will build on this knowledge and begin detailing the process of identifying and estimating causal quantities with topics such as interventions, counterfactuals, the <em>do-</em>operator, the backdoor adjustment criterion and more... see you there :)</p>
+<div class="footnotes">
+<hr>
+<ol><li id="fn-1"><p>Being totally candid, I think this is a stupid name and I hope someone prominent in the field changes this nomenclature in the future.<a href="#fnref-1" class="footnote">&#8617;</a></p></li>
+<li id="fn-2"><p>The code to reproduce these results can be found on my blog's GitHub <strong><a href="https://github.com/c-abbott/c-abbott.github.io/tree/main/content/flow-of-causation"> here</a></strong>.<a href="#fnref-2" class="footnote">&#8617;</a></p></li>
+</ol>
+</div>
 
   </div>
+</div>
 
 
   </div>
