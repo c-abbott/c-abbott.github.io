@@ -3,34 +3,37 @@
 {% block title %}{{ this.title }}{% endblock %}
 {% block body %}
 
-  <div class="intro">
-    <div class="bio">
-      <div>
-        <p>Hi, I'm Callum 👋</p>
-        <p>I am a classically trained theoretical physicist transitioning into the field of data science and machine learning (ML) via a Data Science MSc at the <a id="link" href="https://www.ed.ac.uk">University of Edinburgh</a>. I am currently a member of Jacques Fleuriot's <a href="https://aiml.inf.ed.ac.uk">AI Modelling Lab</a> where I spend most of my time investigating applications of causal inference for the development of exaplainable AI (XAI) in healthcare.</p>
-        <p><b>Keywords: </b>causal inference, machine learning, dataviz, bayesian, health informatics, rock climbing, coffee, fantasy premier league.</p>
-      </div>
-    </div>
-    <div class="picture">
-      <img alt="profile picture of callum" src="{{ '/static/callum.png'|url }}">
+<div class="intro">
+  <div class="bio">
+    <div>
+      <p>Hi, I'm Callum 👋</p>
+      <p>I am product-first Data Scientist at <a id="link" href="https://www.sidekickhealth.com">Sidekick Health</a>
+        interested in all aspects of product development; from engineering and
+        statistics, to process management and UI/UX design. </p>
+      <p><b>Keywords: </b>causal inference, machine learning, dataviz, bayes, rock climbing,
+        coffee, fantasy premier league, frisbee-golf.</p>
     </div>
   </div>
-
-  <div class="index-posts">
-
-    <div class="legend">Blog Posts</div>
-
-    {% for post in this.pagination.items %}
-      <a href="{{ post|url }}" class="post">
-        <div class="title">{{ post.title }}</div>
-        <div class="date">{{ post.pub_date|dateformat('long') }}</div>
-      </a>
-    {% endfor %}
-
-    {% if this.pagination.pages > 1 %}
-      {{ render_pagination(this.pagination) }}
-    {% endif %}
-
+  <div class="picture">
+    <img alt="profile picture of callum" src="{{ '/static/callum-dark-blue.jpeg'|url }}">
   </div>
+</div>
+
+<div class="index-posts">
+
+  <div class="legend">Blog Posts</div>
+
+  {% for post in this.pagination.items %}
+  <a href="{{ post|url }}" class="post">
+    <div class="title">{{ post.title }}</div>
+    <div class="date">{{ post.pub_date|dateformat('long') }}</div>
+  </a>
+  {% endfor %}
+
+  {% if this.pagination.pages > 1 %}
+  {{ render_pagination(this.pagination) }}
+  {% endif %}
+
+</div>
 
 {% endblock %}
