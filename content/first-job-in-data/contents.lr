@@ -1,4 +1,4 @@
-title: Stuff I Wish I Knew Before Becoming a Data Scientist
+title: Stuff I wish I knew before becoming a data scientist
 ---
 hero_image: 
 ---
@@ -6,7 +6,7 @@ pub_date: 2022-09-11
 ---
 body:
 
-## One Year on the Job
+## One year on the job
 Anniversaries are a mixed bag. From celebrations to mournings, they are a funny bunch, and as of tomorrow I will have clocked-up 1 whole year in my current role as a Data Scientist. Now, I have had some data jobs prior to this role - some internships and consultancy work here and there - but I shamelessly admit that this is my first *real* job. 
 
 In this job, I feel fortunate to be surrounded by an intelligent, but most importantly kind, data team hailing from companies such as Spotify, King, and Bloomberg. They have taught me how to construct and orchestrate SQL pipelines, modularize and test my dbt code, as well as extract signal from messy industry data. However, the most valuable thing I have learnt from my team are the standards hold your workplace and manager to. What would my career look like if I hadn't been so lucky to learn this? 
@@ -43,7 +43,7 @@ Giving your manager a good impression of yourself is one thing, but the relation
 
 If your answer to most of these questions are yes, then you're probably enjoying your time at work and are in good shape for some nice career growth. If your manager is failing at these tasks though, I think it's time you look elsewhere 👀
 
-## Org Structure
+## Org structure
 
 <div class="caption">
   <img src="./is_this_a_pigeon.png"style="width:70%" style="height:70%">
