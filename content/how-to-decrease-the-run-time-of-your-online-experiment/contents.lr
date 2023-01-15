@@ -29,7 +29,37 @@ We begin our analysis by assuming all our observations of user step counts are i
 Independence: one user's step count does not affect another. 
 Identically Distributed: the data-generating process governing the collection of a user's steps - also known as walking - is similar across users and can be modelled with the same distribution.
 
-With this assumption, we can then safely apply the Central Limit Theorem to derive the normality of the average step count per user metric, enabling us to apply our beloved t-test on the sample means between the treatment and control groups. Average step counts are probably normally distributed between groups anyway but now we're doubly sure :)
+With this assumption, we can then safely apply the Central Limit Theorem to derive the normality of the average step count per user metric, enabling us to apply our beloved t-test on the sample means between the treatment and control groups. Average step counts are probably normally distributed between groups anyway, but now we're doubly sure. We, therefore, plough ahead and compute our (Welch's) t-statistic under the null hypothesis that the sample means between the treatment and control groups are equal with the following formula:
+
+$$\begin{aligned}t = \frac{\bar{x}_T- \bar{x}_C}{\sqrt{\frac{s_T^2}{n_T} + \frac{s_C^2}{n_C}}}
+\end{aligned}$$
+
+Where:
+- $\bar{x}_T$ is the sample mean of the treatment group
+- $\bar{x}_C$ is the sample mean of the control group
+- $s_T^2$ is the sample variance of the treatment group
+- $s_C^2$ is the sample variance of the control group
+- $n_T$ is the sample size of the treatment group
+- $n_C$ is the sample size of the control group
+
+Delacre et al. (2017) show that Welch's t-test provides better control of Type 1 error rates when the assumption of homogeneity of variance is not met, and it loses little robustness compared to Student's t-test when the assumptions are met.
+
+Glancing at this formula intuitively, we can see that the numerator of this formula corresponds to the effect size of the feature - the difference in sample means between the treatment and control groups - so larger effect sizes correspond to larger values of t, which result in smaller p-values. In other words, assuming constant variance in the metric, the larger its change, the easier it is to determine that a change in a metric was statistically significant. Makes sense. Alternatively, let's investigate the denominator of this formula under the assumption of a constant effect size. We see that metrics with larger variances result in a reduction in the value of the t-statistic, thus creating larger, less significant p-values. This also makes sense since even if you have a large effect size, if the variance of this metric is also relatively large, then it is difficult to determine whether this change is actually due to the feature you just shipped or is just noise.
+
+So can we start getting to the point? How do I start running my experiments faster?
+
+Rearranging the formula for the t-statistic, we observe that there are three ways we can try to yield more significant results from our experiments allowing us to end them faster:
+
+1. Larger effect sizes: ship better features
+2. Larger sample sizes: run experiments for longer
+3. Lower variance metrics (and hence lower standard deviations in the metric): CUPED
+
+It's clearly difficult for the Data Scientist to affect point 1. since they are usually not the ones producing the feature. However, this notion can be used as an argument against drawing conclusions from experiments run on half-baked features. Point 2. is exactly the scenario we're trying to avoid in this blog post, which leaves us with point 3. of choosing lower variance metrics to measure experiments against over higher variance metrics. Whilst this 
+
+
+
+
+
 
 the common scenario where we have been tasked by the team to decide whether our new push notification strategy has increased 7-Day Retention for our product.
 
