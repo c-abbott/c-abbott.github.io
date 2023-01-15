@@ -18,9 +18,22 @@ Smaller companies - with consequently smaller user bases - are hindered in this 
 While grappling with the statistical challenges of online experimentation, the Data Scientist must also juggle the internal politics of making demands from an individual-contributor (IC) level. The engineers and designers understandably want their work to be shipped ASAP, and the PM often has some sort of roadmap deadlines to meet but along comes the Data Scientist with needs like:
 - *We need to maintain the old feature and design and implement 2 other versions for the experiment.*
 - *No, we can't ship this other feature right now since it will impact the experiment we already have running.*
-- *We got fewer active users than expected, so it's gonna be another couple weeks of the experiment running before we deploy to everyone.*
+- *We got fewer new users than expected this past month, so we're gonna need another couple of weeks of running the experiment.*
 
 Online experiments undoubtedly increase product development time, but CUPED can ease this with a simple mathematical trick.
 
+## Example: does our new step counter increase the steps taken by users?
+To understand how CUPED works, we must first grok the math behind how one determines if a treatment effect is statistically significant. I work best with examples, so let's imagine we are a fitness SaaS company, and we want to see if our updated step counter feature causes users to walk more. We use the average number of steps each user takes during the experiment period to measure this experiment against, and we randomly expose the new step counter to 5000 users corresponding to 50% of our current user base.
 
-As a member of a cross-functional product team, my role is to measure the performance of new features through A/B testing. While data-driven decision-making is common practice at successful tech companies, running online experiments can present challenges. It can be difficult to determine whether a feature is truly effective or if the observed results are simply due to normal fluctuations in user behavior. Smaller companies may struggle with small sample sizes, while larger companies may face small effect sizes. Additionally, the process of conducting online experiments may be slowed by internal politics as team members prioritize their own goals and deadlines. However, using a technique called CUPED (insert acronym explanation) can help to streamline the product development process.
+We begin our analysis by assuming all our observations of user step counts are independent and identically distributed, which says two things:
+Independence: one user's step count does not affect another. 
+Identically Distributed: the data-generating process governing the collection of a user's steps - also known as walking - is similar across users and can be modelled with the same distribution.
+
+With this assumption, we can then safely apply the Central Limit Theorem to derive the normality of the average step count per user metric, enabling us to apply our beloved t-test on the sample means between the treatment and control groups. Average step counts are probably normally distributed between groups anyway but now we're doubly sure :)
+
+the common scenario where we have been tasked by the team to decide whether our new push notification strategy has increased 7-Day Retention for our product.
+
+The new push strategy was randomly exposed to 5000 out of our latest 10,000 new users, meaning we have valid treatment and control groups to compare.
+
+Since 7-Day Retention is a binary variable at the user level, it makes sense to model this data-generating process as a binomial distribution with $N$ trials and a probability of retention, $p$. However, given the volume of data we have, we can safely apply the Central Limit Theorem (CLT) to approximate this binomial distribution as a normal distribution with mean $p$ and variance $\frac{p(1-p)}{N}$ . To prove this, l
+
