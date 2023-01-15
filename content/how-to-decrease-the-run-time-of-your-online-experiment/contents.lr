@@ -1,16 +1,26 @@
-title: Maximize your experimentation output with CUPED: a simple technique for faster results
+title: Maximize your experimentation output with CUPED: a simple technique for faster A/B tests
 ---
 hero_image: 
 ---
-pub_date: 2022-09-11
+pub_date: 2023-01-15
 ---
 body:
 
-## 
-The inescapable problem of variance 
-God does not play dice with the universe
-Talk about how variance in metrics results in less significant measures of uplift in metrics in turn requiring extra power. This is true for both large companies with lots of data (effect sizes) are smaller and small companies with little data sample sizes are smaller
-## 
-##
-##
-##
+## Separating Signal from Noise in Product Experimentation
+Recently, I have been re-positioned within my company to sit on a cross-functional product team consisting of a PM, a designer, a handful of engineers, and a behavioural scientist. We aim to boost our product's retention and engagement metrics and do it pronto. 
+
+My role in the team is to measure the performance of the features produced by us, with the primary method of measurement being A/B testing, also known as experimentation. Now, it is no secret that data-supported decisions have ruled the roost at unicorn tech companies (Duolingo, Netflix, Airbnb) for the past decade, so it naturally follows that smaller companies try to follow suit.
+
+However, the problem nearly all companies suffer from when running experiments is untangling the signal produced by the feature from the noise created by everyday user behaviour. Was this feature actually any good? Or are we just observing the random fluctuations that happen anyways? 
+
+Smaller companies - with consequently smaller user bases - are hindered in this untangling process by small sample sizes, i.e. do we have enough users to power a statistically significant result out of this experiment? Meanwhile, larger companies - with larger user bases but more mature products - suffer from small effect sizes, i.e. is this 1% increase in New User Retention due to my feature, or is it just the variance that naturally exists in this metric?
+
+While grappling with the statistical challenges of online experimentation, the Data Scientist must also juggle the internal politics of making demands from an individual-contributor (IC) level. The engineers and designers understandably want their work to be shipped ASAP, and the PM often has some sort of roadmap deadlines to meet but along comes the Data Scientist with needs like:
+- *We need to maintain the old feature and design and implement 2 other versions for the experiment.*
+- *No, we can't ship this other feature right now since it will impact the experiment we already have running.*
+- *We got fewer active users than expected, so it's gonna be another couple weeks of the experiment running before we deploy to everyone.*
+
+Online experiments undoubtedly increase product development time, but CUPED can ease this with a simple mathematical trick.
+
+
+As a member of a cross-functional product team, my role is to measure the performance of new features through A/B testing. While data-driven decision-making is common practice at successful tech companies, running online experiments can present challenges. It can be difficult to determine whether a feature is truly effective or if the observed results are simply due to normal fluctuations in user behavior. Smaller companies may struggle with small sample sizes, while larger companies may face small effect sizes. Additionally, the process of conducting online experiments may be slowed by internal politics as team members prioritize their own goals and deadlines. However, using a technique called CUPED (insert acronym explanation) can help to streamline the product development process.
