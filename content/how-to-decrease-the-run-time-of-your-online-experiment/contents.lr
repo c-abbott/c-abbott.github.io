@@ -15,25 +15,26 @@ However, the problem nearly all companies suffer from when running experiments i
 
 Smaller companies - with consequently smaller user bases - are hindered in this untangling process by small sample sizes, i.e. do we have enough users to power a statistically significant result out of this experiment? Meanwhile, larger companies - with larger user bases but more mature products - suffer from small effect sizes, i.e. is this 1% increase in New User Retention due to our feature, or are we just observing the variance that naturally occurs in this metric?
 
-While grappling with the statistical challenges of online experimentation, the Data Scientist must also juggle the internal politics of making demands from an individual-contributor (IC) level. The engineers and designers understandably want their work to be shipped ASAP, and the PM often has some sort of roadmap deadlines to meet but along comes the Data Scientist with needs like:
+While grappling with the statistical challenges of online experimentation, the Data Scientist must also juggle the internal politics of making demands from an individual-contributor (IC) level. The engineers and designers understandably want their work to be shipped ASAP, and the PM often has some sort of roadmap deadlines to meet but along comes the Data Scientist with requests such as:
 - *We need to maintain the old feature and design and implement 2 other versions for the experiment.*
 - *No, we can't ship this other feature right now since it will impact the experiment we already have running.*
 - *We got fewer new users than expected this past month, so we're gonna need another couple of weeks of running the experiment.*
 
 Online experiments undoubtedly increase product development time, but CUPED can alleviate this issue with a simple mathematical trick.
 
-## Hypothesis testing refresher
-*CUPED works by reducing the variance of the performance metric you're measuring your experiment with thus increasing statistical power.* 
+## Hypothesis testing refresher: step count experiment
 
-If this statement makes sense to you, then you can just skip to the next section to see how CUPED is implemented in SQL + Python, but if not, then here's an intuitive explanation of hypothesis testing and t-tests.
+CUPED is a technique developed by the Experiment Platform team at Microsoft **<a href="https://www.exp-platform.com/Documents/2013-02-CUPED-ImprovingSensitivityOfControlledExperiments.pdf">(Deng, Xu, Kohavi, & Walker, 2013)</a>** which increases the statistical power of an experiment by accounting for variance in an experiment's performance metric using pre-experiment information.
 
-In order to understand how CUPED works, we must first grok the math behind how one determines if a treatment effect is statistically significant. I work best with examples, so let's imagine we are a fitness SaaS company, and we want to see if our updated step counter feature causes users to walk more. We use the average number of steps each user takes during the experiment period to measure this experiment against, and we randomly expose the new step counter to 5000 users corresponding to 50% of our active step counter users.
+If this statement makes sense to you, then you can just skip to the next section to see how CUPED is implemented in Python, but if not, stick around for an intuitive explanation of why reducing variance lead to faster A/B tests.
+
+In order to understand how CUPED works, we must first grok the math behind how one determines if a treatment effect is statistically significant. I work best with examples, so let's imagine we are a fitness SaaS company, and we want to see if our updated step counter feature causes users to walk more. We use the average number of steps each user takes per day during the experiment period to measure this experiment against, and we randomly expose the new step counter to 5000 users corresponding to 50% of our active step counter users.
 
 We begin our analysis by assuming all our observations of user step counts are independent and identically distributed, which says two things:
 - **Independence:** one user's average step count does not affect another. 
 - **Identically Distributed:** the data-generating process governing the collection of a user's steps - also known as walking - is similar across users, and hence can be modelled with the same distribution.
 
-With this assumption, we can then safely apply the Central Limit Theorem to derive the normality of the average step count per user metric allowing us to apply a t-test on the sample means between the treatment and control groups. Average step counts are probably normally distributed between groups anyway, but now we're doubly sure. Ploughing ahead and we compute our (Welch's) t-statistic[^1] under the null hypothesis that the sample means between the treatment and control groups are equal with the following formula:
+With this assumption, we can then safely apply the Central Limit Theorem to derive the normality of the average step count metric allowing us to apply a t-test on the sample means between the treatment and control groups. Average step counts are probably normally distributed between groups anyway, but now we're doubly sure. Ploughing ahead and we compute our (Welch's) t-statistic[^1] under the null hypothesis that the sample means between the treatment and control groups are equal with the following formula:
 
 $$\begin{aligned}t = \frac{\bar{y}_T- \bar{y}_C}{\sqrt{\frac{s_T^2}{n_T} + \frac{s_C^2}{n_C}}}
 \end{aligned}$$
@@ -44,9 +45,9 @@ Where:
 - $n_{T, C}$ is the sample size of the (treatment, control) group
 
 You could take my word that larger values of $t$ correspond to smaller p-values and hence greater certainty in the rejection of our null hypothesis that $
-\bar{y}_T - \bar{y}_C = 0$, but if there's one thing a theoretical physics degree teaches you, it is to develop an intuition around important formulas.
+\bar{y}_T - \bar{y}_C = 0$, but if there's one thing a theoretical physics degree teaches you, it is to develop an intuition around essential formulas.
 
-So, glancing at the numerator of $t$, we see this corresponds to the effect size of the feature whilst the denominator is some measure of the variance of $\bar{y}_T - \bar{y}_C$. Larger values of $t$ are hence obtained when the feature's effect size is large and/or if the metric we use to measure the feature has a relatively low variance. In other words, it's easy to detect the effect of a feature on a product if that effect is very large, or even if the effect is very small, if the metric we're measuring success with tends to stay at similar values over time then even small changes in this metric can be attributed to the feature.
+So, glancing at the numerator of $t$, we see this corresponds to the feature's effect size whilst the denominator is some measure of the variance of $\bar{y}_T - \bar{y}_C$. Larger values of $t$ (and hence smaller p-values) are obtained when the feature's effect size is large and/or if the metric we use to measure the feature has a relatively low variance. In other words, it's easy to detect the effect of a feature on a product if that effect is very large, or even if the effect is very small, if the metric we're measuring success with tends to stay at similar values over time then even small changes in this metric can be attributed to the feature.
 
 For the mathematically inclined, another way to wrap your head around this formula is to define a new random variable, $Z$, as the difference between the treatment and control average step counts per user:
 
@@ -64,7 +65,7 @@ Now, the parameters of $Z$'s distribution are also random variables themselves, 
   <img src="./distributions.jpeg"style="width:90%" style="height:90%">
 </div>
 
-Plotting the distribution of $Z$ on some arbitrary axes shown below, we observe that the statistical power of an experiment boils down to a tug-of-war between effect size and variance. We need the effect size of the experiment to be sufficiently large such that an insignificant amount of $Z$'s probability density sits over 0 and this notion is what the p-value quantifies. The smaller the p-value, the less this distribution sits over 0.
+Plotting the distribution of $Z$ on some arbitrary axes shown below, we observe that the statistical power of an experiment boils down to a tug-of-war between effect size and variance. We need the effect size of the experiment to be sufficiently large such that an insignificant amount of $Z$'s probability density sits over 0. The smaller the p-value, the less this distribution sits over 0.
 
 
 <div class="caption">
@@ -72,13 +73,29 @@ Plotting the distribution of $Z$ on some arbitrary axes shown below, we observe 
 </div>
 
 
-So can we start getting to the point? How do I start running my experiments faster?
+With our newfound understanding of t-tests, perhaps it is now clear how we can start speeding up our analyses and consequently accelerate the experimentation flywheel. We don't have much control over the effect size at analysis time, so all that's left is to try and use techniques like CUPED to reduce the variance of our performance metric. 
 
-The formula for the t-statistic reveals there are 3 ways to obtain more significant results from experiments:
 
-1. Larger effect sizes
-2. Larger sample sizes
-3. Lower variance metrics
+## CUPED in Python
+
+To implement CUPED, we must work under the assumption that we have access to some pre-experiment information about our users. For our step counter example, the ideal case would be access to our user's average daily step counts to measure the variance of this metric before the experiment went live. We can then subtract this pre-experiment variance from the variance measured during the experiment period under the premise that the variance in a metric explained by pre-experiment data is unrelated to any effects of the experiment.
+
+We perform CUPED mathematically by modifying how we estimate the effect size of our feature, also known as the average treatment effect (ATE). If we normally estimate the ATE as follows:
+
+$$\begin{aligned} \bar{\text{ATE}}  =  \bar{Y}_T - \bar{Y}_C \end{aligned}$$
+
+Then the CUPED-adjusted estimate is obtained by a simple covariate adjustment: 
+
+$$\begin{equation} \bar{\text{ATE}}^{CUPED} =  \bar{Y}^{CUPED}_T - \bar{Y}^{CUPED}_C \end{equation}$$
+
+$$\begin{equation} \bar{\text{ATE}}^{CUPED} =  (\bar{Y}-\theta \bar{X} )_T - (\bar{Y}-\theta \bar{X})_T \end{equation}$$
+
+Where
+- $\theta = \frac{\text{Cov(X, Y)}}{\text{Var}(X)}$
+- $X$ denotes a specified covariate
+
+
+
 
 
 
