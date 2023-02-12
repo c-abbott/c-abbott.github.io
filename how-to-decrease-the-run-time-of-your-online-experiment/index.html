@@ -1,14 +1,14 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="static/style.css?v=1">
+<link rel="stylesheet" href="../static/style.css?v=1">
 <link rel="alternate" type="application/atom+xml" title="callum" href="/feed.xml" />
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 
-<meta content='http://www.causalcallum.com/ /static/callum.png' property='og:image'>
 
-<title>callum</title>
+
+<title>Maximize your experimentation output with CUPED: a simple technique for faster A/B tests</title>
 <link rel="favicon" href="assets/static/favicon.ico" type="image/x-icon"/>
 
 <body>
@@ -47,7 +47,7 @@
       }
     </style>
     <h1>
-      <a href="./"></a>
+      <a href="../"></a>
       <a href="mailto:cllmbbtt@gmail.com"></a>
     </h1>
     <div class="social">
@@ -69,49 +69,79 @@
   </header>
   <div class="page">
     
-
-<div class="intro">
-  <div class="bio">
-    <div>
-      <p>Hi, I'm Callum 👋</p>
-      <p>I am Data Scientist at <a id="link" href="https://www.sidekickhealth.com">Sidekick Health</a>
-        interested in all aspects of product development. </p>
-      <p><b>Keywords: </b>causal inference, experiments, machine learning.</p>
-    </div>
+  
+<div class="blog-post">
+  <div class="blog-post-header">
+    <h1>Maximize your experimentation output with CUPED: a simple technique for faster A/B tests</h1>
+    <p class="meta">
+      January 15, 2023
+    </p>
   </div>
-  <div class="picture">
-    <img alt="profile picture of callum" src="static/callum-dark-blue.jpeg">
-  </div>
+  
+  <div class="blog-post-body">
+    <h2>Separating Signal from Noise in Product Experimentation</h2>
+<p>Recently, I have been re-positioned within my company to sit on a cross-functional product team consisting of a PM, a designer, a handful of engineers, and a behavioural scientist. We aim to boost our product's retention and engagement metrics and do it pronto.</p>
+<p>My role in the team is to measure the performance of the features produced by us, with the primary method of measurement being A/B testing, also known as experimentation. Now, it is no secret that data-supported decisions have ruled the roost at unicorn tech companies (Duolingo, Netflix, Airbnb) for the past decade, so it naturally follows that smaller companies try to follow suit.</p>
+<p>However, the problem nearly all companies suffer from when running experiments is untangling the signal produced by the feature from the noise created by everyday user behaviour. Was this feature actually any good? Or are we just observing the random fluctuations that happen anyways?</p>
+<p>Smaller companies - with consequently smaller user bases - are hindered in this untangling process by small sample sizes, i.e. do we have enough users to power a statistically significant result out of this experiment? Meanwhile, larger companies - with larger user bases but more mature products - suffer from small effect sizes, i.e. is this 1% increase in New User Retention due to our feature, or are we just observing the variance that naturally occurs in this metric?</p>
+<p>While grappling with the statistical challenges of online experimentation, the Data Scientist must also juggle the internal politics of making demands from an individual-contributor (IC) level. The engineers and designers understandably want their work to be shipped ASAP, and the PM often has some sort of roadmap deadlines to meet but along comes the Data Scientist with requests such as:</p>
+<ul>
+<li><em>We need to maintain the old feature and design and implement 2 other versions for the experiment.</em></li>
+<li><em>No, we can't ship this other feature right now since it will impact the experiment we already have running.</em></li>
+<li><em>We got fewer new users than expected this past month, so we're gonna need another couple of weeks of running the experiment.</em></li>
+</ul>
+<p>Online experiments undoubtedly increase product development time, but CUPED can alleviate this issue with a simple mathematical trick.</p>
+<h2>Hypothesis testing refresher: step count experiment</h2>
+<p>CUPED is a technique developed by the Experiment Platform team at Microsoft <strong><a href="https://www.exp-platform.com/Documents/2013-02-CUPED-ImprovingSensitivityOfControlledExperiments.pdf">(Deng, Xu, Kohavi, & Walker, 2013)</a></strong> which increases the statistical power of an experiment by accounting for variance in an experiment's performance metric using pre-experiment information.</p>
+<p>If this statement makes sense to you, then you can just skip to the next section to see how CUPED is implemented in Python, but if not, stick around for an intuitive explanation of why reducing variance lead to faster A/B tests.</p>
+<p>In order to understand how CUPED works, we must first grok the math behind how one determines if a treatment effect is statistically significant. Let's imagine we are a fitness SaaS company, and we want to see if our updated step counter feature causes users to walk more. We use the average number of steps each user takes per day during the experiment period to measure this experiment against, and we randomly expose the new step counter to 5000 users corresponding to 50% of our active step counter users.</p>
+<p>We begin our analysis by assuming all our observations of user step counts are independent and identically distributed, which says two things:</p>
+<ul>
+<li><strong>Independence:</strong> one user's average step count does not affect another. </li>
+<li><strong>Identically Distributed:</strong> the data-generating process governing the collection of a user's steps - also known as walking - is similar across users, and hence can be modelled with the same distribution.</li>
+</ul>
+<p>With this assumption, we can then safely apply the Central Limit Theorem to derive the normality of the average step count metric allowing us to apply a t-test on the sample means between the treatment and control groups. Average step counts are probably normally distributed between groups anyway, but now we're doubly sure. Ploughing ahead and we compute our (Welch's) t-statistic<sup class="footnote-ref" id="fnref-1"><a href="#fn-1">1</a></sup> under the null hypothesis that the sample means between the treatment and control groups are equal with the following formula:</p>
+<p>$$\begin{aligned}t = \frac{\bar{y}_T- \bar{y}_C}{\sqrt{\frac{s_T^2}{n_T} + \frac{s_C^2}{n_C}}}
+\end{aligned}$$</p>
+<p>Where:</p>
+<ul>
+<li>$\bar{y}_{T, C}$ is the sample mean of the (treatment, control) group</li>
+<li>$s_{T, C}^2$ is the sample variance of the (treatment, control) group</li>
+<li>$n_{T, C}$ is the sample size of the (treatment, control) group</li>
+</ul>
+<p>You could take my word that larger values of $t$ correspond to smaller p-values and hence greater certainty in the rejection of our null hypothesis that $
+\bar{y}_T - \bar{y}_C = 0$, but if there's one thing a theoretical physics degree teaches you, it is to develop an intuition around essential formulas.</p>
+<p>So, glancing at the numerator of $t$, we see this corresponds to the feature's effect size - $\bar{y}_T - \bar{y}_C$ - whilst the denominator is some measure of the variance of this quantity. Larger values of $t$ (and hence smaller p-values) are obtained when the feature's effect size is large and/or if the metric we use to measure the feature has a relatively low variance. In other words, it's easy to detect the effect of a feature on a product if that effect is very large, or even if the effect is very small, if the metric we're measuring success with tends to stay at similar values over time then even small changes in this metric can be attributed to the feature.</p>
+<p>For the mathematically inclined, another way to wrap your head around this formula is to define a new random variable, $Z$, as the difference between the treatment and control average step counts per user:</p>
+<p>$$\begin{aligned}Z = Y_T - Y_C \end{aligned}$$</p>
+<p>Since we've already assumed $Y_T$ and $Y_C$ to be normal, $Z$ <strong><a href="https://en.wikipedia.org/wiki/Sum_of_normally_distributed_random_variables#:~:text=This%20means%20that%20the%20sum,squares%20of%20the%20standard%20deviations).">must also be normal with the following parameterization</a></strong>:</p>
+<p>$$\begin{aligned} Z  \sim \mathcal{N}(\mu_{Z}, \sigma^{2}) \end{aligned}$$</p>
+<p>Now, the parameters of $Z$'s distribution are also random variables themselves, so we must estimate them using the sampled data we've collected from our experiment. The diagram below details the formulas used to estimate these variables, which demonstrates that the numerator of $t$ is equal to our estimate of $\mu_{Z} \approx \bar{y}_T - \bar{y}_C $, and the denominator is equal to our estimate of $\sigma \approx \sqrt{\frac{s_T^2}{n_T} + \frac{s_C^2}{n_C}} = s$ - also known as the sample standard deviation of $Z$</p>
+<div class="caption">
+  <img src="./distributions.jpeg"style="width:90%" style="height:90%">
+</div><p>Plotting the distribution of $Z$ on some arbitrary axes shown below, we observe that the statistical power of an experiment boils down to a tug-of-war between effect size and variance. We need the effect size of the experiment to be sufficiently large such that an insignificant amount of $Z$'s probability density sits over 0. The smaller the p-value, the less this distribution sits over 0.</p>
+<div class="caption">
+  <img src="./effect_sizes.jpeg"style="width:90%" style="height:90%">
+</div><p>With our newfound understanding of t-tests, perhaps it is now clear how we can start speeding up our analyses and consequently accelerate the experimentation flywheel. We don't have much control over the effect size at analysis time, so all that's left is to try and use techniques like CUPED to reduce the variance of our performance metric.</p>
+<h2>CUPED in Python</h2>
+<p>To implement CUPED, we must work under the assumption that we have access to some pre-experiment information about our users. For our step counter example, the ideal case would be access to our user's average daily step counts to measure the variance of this metric before the experiment went live. We can then subtract this pre-experiment variance from the variance measured during the experiment period under the premise that the variance in a metric explained by pre-experiment data is unrelated to any effects of the experiment.</p>
+<p>We perform CUPED mathematically by modifying how we estimate the effect size of our feature, also known as the average treatment effect (ATE). If we normally estimate the ATE as follows:</p>
+<p>$$\begin{aligned} \bar{\text{ATE}}  =  \bar{Y}_T - \bar{Y}_C \end{aligned}$$</p>
+<p>Then the CUPED-adjusted estimate is obtained by a simple covariate adjustment:</p>
+<p>$$\begin{equation} \bar{\text{ATE}}^{CUPED} =  \bar{Y}^{CUPED}_T - \bar{Y}^{CUPED}_C \end{equation}$$</p>
+<p>$$\begin{equation} \bar{\text{ATE}}^{CUPED} =  (\bar{Y}-\theta \bar{X} )_T - (\bar{Y}-\theta \bar{X})_T \end{equation}$$</p>
+<p>Where</p>
+<ul>
+<li>$\theta = \frac{\text{Cov(X, Y)}}{\text{Var}(X)}$</li>
+<li>$X$ denotes a specified covariate</li>
+</ul>
+<div class="footnotes">
+<hr>
+<ol><li id="fn-1"><p>Delacre et al. (2017) show that Welch's t-test provides better control of Type 1 error rates when the assumption of homogeneity of variance is not met, and it loses little robustness compared to Student's t-test when the assumptions are met.<a href="#fnref-1" class="footnote">&#8617;</a></p></li>
+</ol>
 </div>
 
-<div class="index-posts">
-
-  <div class="legend">Blog Posts</div>
-
-  
-  <a href="on-motivation-progress-and-lifting/" class="post">
-    <div class="title">On motivation, progress, and why you should be ego-lifting</div>
-    <div class="date">12 February 2023</div>
-  </a>
-  
-  <a href="first-job-in-data/" class="post">
-    <div class="title">Stuff I wish I knew before becoming a data scientist</div>
-    <div class="date">11 September 2022</div>
-  </a>
-  
-  <a href="flow-of-causation/" class="post">
-    <div class="title">The flow of causation</div>
-    <div class="date">21 May 2021</div>
-  </a>
-  
-  <a href="scms/" class="post">
-    <div class="title">Describing causation</div>
-    <div class="date">9 May 2021</div>
-  </a>
-  
-
-  
-
+  </div>
 </div>
 
 
