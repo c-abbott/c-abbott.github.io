@@ -1,0 +1,14 @@
+title: Dunking on Data: What the hell is an underpowered experiment?
+---
+body:
+
+Even after only 18 months of working as a Data Scientist, I have grown tired of repeating myself. It is unreasonable to expect every business stakeholder to have a grasp of causal inference and statistics. Nevertheless, the feeling of wanting to shoot my brains out after explaining variance for the third time in one week is still valid. Like all good bootstrapped start-ups then,  I hope to solve my own problems by creating Dunking on Data, a series of blog posts that any data person can point to where I answer the questions your team are probably thinking when you are presenting your work. We kick the series off with:
+
+> What the hell is an underpowered experiment?
+
+
+
+---
+pub_date: 2023-02-11
+---
+_discoverable: no

@@ -28,7 +28,7 @@ CUPED is a technique developed by the Experiment Platform team at Microsoft **<a
 
 If this statement makes sense to you, then you can just skip to the next section to see how CUPED is implemented in Python, but if not, stick around for an intuitive explanation of why reducing variance lead to faster A/B tests.
 
-In order to understand how CUPED works, we must first grok the math behind how one determines if a treatment effect is statistically significant. I work best with examples, so let's imagine we are a fitness SaaS company, and we want to see if our updated step counter feature causes users to walk more. We use the average number of steps each user takes per day during the experiment period to measure this experiment against, and we randomly expose the new step counter to 5000 users corresponding to 50% of our active step counter users.
+In order to understand how CUPED works, we must first grok the math behind how one determines if a treatment effect is statistically significant. Let's imagine we are a fitness SaaS company, and we want to see if our updated step counter feature causes users to walk more. We use the average number of steps each user takes per day during the experiment period to measure this experiment against, and we randomly expose the new step counter to 5000 users corresponding to 50% of our active step counter users.
 
 We begin our analysis by assuming all our observations of user step counts are independent and identically distributed, which says two things:
 - **Independence:** one user's average step count does not affect another. 
@@ -47,7 +47,7 @@ Where:
 You could take my word that larger values of $t$ correspond to smaller p-values and hence greater certainty in the rejection of our null hypothesis that $
 \bar{y}_T - \bar{y}_C = 0$, but if there's one thing a theoretical physics degree teaches you, it is to develop an intuition around essential formulas.
 
-So, glancing at the numerator of $t$, we see this corresponds to the feature's effect size whilst the denominator is some measure of the variance of $\bar{y}_T - \bar{y}_C$. Larger values of $t$ (and hence smaller p-values) are obtained when the feature's effect size is large and/or if the metric we use to measure the feature has a relatively low variance. In other words, it's easy to detect the effect of a feature on a product if that effect is very large, or even if the effect is very small, if the metric we're measuring success with tends to stay at similar values over time then even small changes in this metric can be attributed to the feature.
+So, glancing at the numerator of $t$, we see this corresponds to the feature's effect size - $\bar{y}_T - \bar{y}_C$ - whilst the denominator is some measure of the variance of this quantity. Larger values of $t$ (and hence smaller p-values) are obtained when the feature's effect size is large and/or if the metric we use to measure the feature has a relatively low variance. In other words, it's easy to detect the effect of a feature on a product if that effect is very large, or even if the effect is very small, if the metric we're measuring success with tends to stay at similar values over time then even small changes in this metric can be attributed to the feature.
 
 For the mathematically inclined, another way to wrap your head around this formula is to define a new random variable, $Z$, as the difference between the treatment and control average step counts per user:
 
@@ -101,3 +101,5 @@ Where
 
 [^1]: Delacre et al. (2017) show that Welch's t-test provides better control of Type 1 error rates when the assumption of homogeneity of variance is not met, and it loses little robustness compared to Student's t-test when the assumptions are met.
 
+---
+_discoverable: no
